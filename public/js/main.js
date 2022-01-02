@@ -1,24 +1,20 @@
-function resHandle(json) {
-    const err = json.err
+function resCheck(json) {
+    const err = json.error;
     if (err != null) {
-        alert(err)
+        alert(err);
         return
     }
-    console.log(json.data)
-    // for (const item of json.data) {
-    //     console.log(item._id)
-    //     console.log(moment(item.date).format("YYYY-MM-DD-HH:mm"))
-    //     console.log(item.refUrl)
-    //     console.log(item.addUrl)
-    // }
 
-    document.querySelector("form[url-form] input[url]").value = ""
-    const nd = json.data
-    // alert("Created new Dofollow: ", nd)
-    console.log(nd);
+    document.querySelector('form[url-form] input[url]').value = '';
+
+    const url = document.querySelector('a[id=url-check]').innerHTML;
+    let idxMatch = null;
+
+    const list_url = json.data;
 
     let table = document.createElement('tbody');
-    for (var i = 0; i < nd.length; i++) {
+    for (var i = 0; i < list_url.length; i++) {
+        const u = list_url[i];
         let tr = document.createElement('tr');
 
         let th = document.createElement('th');
@@ -27,52 +23,101 @@ function resHandle(json) {
 
         let td1 = document.createElement('td');
         let a = document.createElement('a');
-        a.setAttribute('href', nd[i]['addUrl']);
+        a.setAttribute('href', u['addUrl']);
         a = td1.appendChild(a);
-        a.innerHTML = nd[i]['addUrl'];
+        a.innerHTML = u['addUrl'];
         tr.appendChild(td1);
 
         let td2 = document.createElement('td');
-        td2.innerHTML = nd[i]['date'];
+        td2.innerHTML = moment(u['date']).format('YYYY-MM-DD-HH:mm');
         tr.appendChild(td2);
 
         table.appendChild(tr);
 
+        if (u['addUrl'] === url) {
+            idxMatch = i;
+        }
+
     }
 
-    let t = document.querySelector("table[id=list-url]");
+    console.log(idxMatch);
+    document.querySelector('p[id=idx-match]').innerHTML = idxMatch;
+
+    let t = document.querySelector('table[id=list-url]');
     t.appendChild(table);
-
-
-
 
 }
 
-function formSubmitHandle(evt) {
+function reqCheckBySubmit(evt, type) {
     // console.log("evt");
     evt.preventDefault();
 
-    //console.log(evt.currentTarget.querySelector("input[url]").value);
-    const url = evt.currentTarget.querySelector("input[url]").value;
+    const url = evt.currentTarget.querySelector('input[url]').value;
+    console.log(url);
+    if (url === undefined) return
 
+    const elm = document.querySelector('a[id=url-check]');
+    elm.innerHTML = url;
+    elm.setAttribute('href', url);
 
-    fetch("/", {
-            method: "POST",
+    fetch('/', {
+            method: 'POST',
             headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                url: url
+                info: {
+                    order: 'check',
+                    type: type,
+                    url: url
+                }
             })
-
         })
         .then(res => res.json())
-        .then(json => resHandle(json))
-        .catch(err => console.log(err))
+        .then(json => resCheck(json))
+        .catch(err => console.log(err));
 
 }
 
-document.querySelector("form[url-form]").addEventListener("submit", formSubmitHandle);
-// console.log("jsjsjs");
 
-//1800-8300 //
+function resAdd(json) {
+    const err = json.error;
+    if (err != null) {
+        alert(err);
+        return
+    }
+
+    if (json.succeed) alert('saved url')
+
+}
+
+
+function reqAddByClick(evt, type) {
+    // console.log(evt);
+
+    const url = document.querySelector('#url-check').innerHTML;
+    console.log(url);
+    if (url === undefined) return
+
+    fetch('/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                info: {
+                    order: 'add',
+                    type: type,
+                    url: url
+                }
+            })
+        })
+        .then(res => res.json())
+        .then(json => resAdd(json))
+        .catch(err => console.log(err));
+
+}
+
+document.querySelector("form[url-form]").addEventListener("submit", (e) => reqCheckBySubmit(e, 'dofollow'));
+
+document.querySelector("button[btAdd]").addEventListener("click", (e) => reqAddByClick(e, 'dofollow'));

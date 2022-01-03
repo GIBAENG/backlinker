@@ -59,6 +59,7 @@ router.post('/', async (req, res) => {
             res.json({
                 error: null,
                 refUrl: ref,
+                host: host,
                 data: findRefs
             });
 
@@ -70,12 +71,14 @@ router.post('/', async (req, res) => {
         try {
             if (post.type === 'dofollow') {
                 await new models.dofollow({
+                    host: host,
                     refUrl: ref,
                     addUrl: u
 
                 }).save();
             } else if (post.type === 'nofollow') {
                 await new models.nofollow({
+                    host: host,
                     refUrl: ref,
                     addUrl: u
 

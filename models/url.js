@@ -6,6 +6,10 @@ const dofollow = new Schema({
         type: Date,
         default: Date.now()
     },
+    host: {
+        type: String,
+        require: true
+    },
     refUrl: {
         type: String,
         required: true
@@ -20,6 +24,10 @@ const nofollow = new Schema({
     date: {
         type: Date,
         default: Date.now()
+    },
+    host: {
+        type: String,
+        require: true
     },
     refUrl: {
         type: String,

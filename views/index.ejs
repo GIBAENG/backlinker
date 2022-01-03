@@ -11,36 +11,70 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/ko.min.js"></script>
     <script defer src="/js/main.js"></script>
+
+    <style>
+        .callout {
+            padding: 20px;
+            border: 1px solid #ced4da;
+            border-left-width: 5px;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 
 <body>
 
-    <h1 class="container mb-4"><a href="/">HOME</a></h1>
+    <!-- <h1 class="container mb-4"><a href="/">HOME</a></h1> -->
+    <nav class="container nav my-4">
+        <a class="nav-link active" aria-current="page" href="/">Check & Add</a>
+        <a class="nav-link" href="/">Popper</a>
+        <a class="nav-link" href="/">Generator</a>
+    </nav>
 
-    <div dofollow class="container mb-4">
-        <form>
+    <div dofollow class="callout container mb-4">
+        <form check>
             <div class="input-group">
                 <input url-input type="url" class="form-control" placeholder="dofollow" required>
-                <button class="btn btn-outline-secondary" type="submit">CHECK</button>
+                <button class="btn btn-outline-secondary" type="submit" style="width:80px">CHECK</button>
             </div>
         </form>
 
-        <div class="px-2 py-2 bg-light position-relative">
+        <div class="px-2 py-3 bg-light position-relative">
             <div style="display:flex">
-                <p>dofollow / Checked ref URL / match full URL on list : # &nbsp</p>
+                dofollow / Checked ref URL / match full URL on list : # &nbsp
                 <p idx-match></p>
             </div>
-            <p refUrl-checked></p>
-            <p><a addUrl-checked href=""></a></p>
-            <div class="position-absolute top-50 end-0 translate-middle">
-                <button url-add class="btn btn-primary">ADD</button>
+            <p host-checked class="text-break"></p>
+            <p refUrl-checked class="text-break"></p>
+            <a addUrl-checked class="text-break" target="_blank" href=""></a>
+        </div>
+
+        <form add>
+            <div class="input-group">
+                <input memo-input type="text" class="form-control" placeholder="memo">
+                <button class="btn btn-outline-secondary" type="submit" style="width:80px">ADD</button>
+            </div>
+        </form>
+
+        <div class="px-2 py-2 bg-light">
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                <label class="form-check-label" for="inlineCheckbox1">앵커텍스트 X</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                <label class="form-check-label" for="inlineCheckbox2">본문링크삽입 X</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="option3">
+                <label class="form-check-label" for="inlineCheckbox3">한글 X</label>
             </div>
         </div>
     </div>
 
     <!-- <br> -->
 
-    <div nofollow class="container mb-4">
+    <!-- <div nofollow class="callout container mb-4">
         <form>
             <div class="input-group">
                 <input url-input type="url" class="form-control" placeholder="dofollow" required>
@@ -59,9 +93,19 @@
                 <button url-add class="btn btn-primary">ADD</button>
             </div>
         </div>
-    </div>
+    </div> -->
 
-    <table table-url class="table container">
+    <table table-url class="table container callout">
+        <thead>
+            <tr>
+                <th scope="col" style="width:40px">#</th>
+                <th scope="col">url</th>
+                <th scope="col" style="width:160px">date</th>
+            </tr>
+        </thead>
+    </table>
+
+    <table table-url class="table container callout">
         <thead>
             <tr>
                 <th scope="col">#</th>
@@ -69,8 +113,6 @@
                 <th scope="col">date</th>
             </tr>
         </thead>
-        <!-- <tbody list>
-        </tbody> -->
     </table>
 
     <!-- https://www.test.com/21?afgheaer -->

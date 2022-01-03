@@ -29,7 +29,7 @@ router.post('/', async (req, res) => {
 
     if (req.body.hasOwnProperty('info') === false) {
         res.json({
-            err: "wrong post request"
+            error: "wrong post request"
         });
         return;
     }
@@ -58,8 +58,8 @@ router.post('/', async (req, res) => {
 
             res.json({
                 error: null,
-                data: findRefs,
-                // url: post.url
+                refUrl: ref,
+                data: findRefs
             });
 
         } catch (e) {

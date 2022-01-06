@@ -24,12 +24,13 @@
 
 <body>
 
-    <!-- <h1 class="container mb-4"><a href="/">HOME</a></h1> -->
     <nav class="container nav my-4">
         <a class="nav-link active" aria-current="page" href="/">Check & Add</a>
         <a class="nav-link" href="/">Popper</a>
         <a class="nav-link" href="/">Generator</a>
     </nav>
+
+    <p testUrl class="container" onclick="copyTest()">https://www.test.com/21?afgheaer</p>
 
     <div dofollow class="callout container mb-4">
         <form check>
@@ -39,15 +40,7 @@
             </div>
         </form>
 
-        <div class="px-2 py-3 bg-light position-relative">
-            <div style="display:flex">
-                dofollow / Checked ref URL / match full URL on list : # &nbsp
-                <p idx-match></p>
-            </div>
-            <p host-checked class="text-break"></p>
-            <p refUrl-checked class="text-break"></p>
-            <a addUrl-checked class="text-break" target="_blank" href=""></a>
-        </div>
+        <br>
 
         <form add>
             <div class="input-group">
@@ -72,50 +65,61 @@
         </div>
     </div>
 
-    <!-- <br> -->
-
-    <!-- <div nofollow class="callout container mb-4">
-        <form>
-            <div class="input-group">
-                <input url-input type="url" class="form-control" placeholder="dofollow" required>
-                <button class="btn btn-outline-secondary" type="submit">CHECK</button>
-            </div>
-        </form>
-
-        <div class="px-2 py-2 bg-light position-relative">
-            <div style="display:flex">
-                <p>nofollow / Checked ref URL / match full URL on list : # &nbsp</p>
-                <p idx-match></p>
-            </div>
-            <p refUrl-checked></p>
-            <p><a addUrl-checked href=""></a></p>
-            <div class="position-absolute top-50 end-0 translate-middle">
-                <button url-add class="btn btn-primary">ADD</button>
-            </div>
+    <div class="container callout mb-4" class="h6">
+        <div class="h6" style="display:flex">
+            <p>Checked by DB &emsp;/&emsp; match in Ref :&nbsp;</p>
+            <p idx-match></p>
+            <p>&emsp;/&emsp; match in Host :&nbsp;</p>
+            <p idx-match2></p>
         </div>
-    </div> -->
+        <div class="h6 d-flex my-0">
+            <p style="width:50px">Url</p>
+            <p addUrl-checked style="padding-left:8px"></p>
+            <div class="ms-auto" style="width:40px; padding:0px 8px;">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+            </div>
 
-    <table table-url class="table container callout">
-        <thead>
-            <tr>
-                <th scope="col" style="width:40px">#</th>
-                <th scope="col">url</th>
-                <th scope="col" style="width:160px">date</th>
-            </tr>
-        </thead>
-    </table>
+        </div>
+    </div>
 
-    <table table-url class="table container callout">
-        <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">url</th>
-                <th scope="col">date</th>
-            </tr>
-        </thead>
-    </table>
+    <div class="container callout mb-4">
+        <div class="h6" style="display:flex">
+            <p style="width:50px">Ref</p>
+            <p refUrl-checked style="padding-left:8px"></p>
+        </div>
 
-    <!-- https://www.test.com/21?afgheaer -->
+        <table table-ref class="table">
+            <thead>
+                <tr>
+                    <th scope="col" style="width:50px">#</th>
+                    <th scope="col">URL - Identical Ref</th>
+                    <th scope="col" style="width:160px">date</th>
+                    <th scope="col" style="width:40px">[]</th>
+                </tr>
+            </thead>
+            <tbody tbody-ref></tbody>
+        </table>
+    </div>
+
+
+    <div class="container callout mb-4">
+        <div class="h6" style="display:flex">
+            <p style="width:50px">Host</p>
+            <p host-checked style="padding-left:8px"></p>
+        </div>
+
+        <table table-hst class="table">
+            <thead>
+                <tr>
+                    <th scope="col" style="width:50px">#</th>
+                    <th scope="col">URL - Identical Host</th>
+                    <th scope="col" style="width:160px">date</th>
+                    <th scope="col" style="width:40px">[]</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
 
 
 

@@ -21,11 +21,8 @@ router.get('/', async (req, res) => {
     }
 });
 
-// const array = []
-// console.log(typeof array)
-
 router.post('/', async (req, res) => {
-    console.log(req.body);
+    // console.log(req.body);
 
     if (req.body.hasOwnProperty('info') === false) {
         res.json({
@@ -46,21 +43,37 @@ router.post('/', async (req, res) => {
     if (post.order === 'check') {
         try {
             let findRefs = [];
+            let findHsts = [];
             if (post.type === 'dofollow') {
                 findRefs = await models.dofollow.find({
                     refUrl: ref
+                });
+                findHsts = await models.dofollow.find({
+                    host: host
                 });
             } else if (post.type === 'nofollow') {
                 findRefs = await models.nofollow.find({
                     refUrl: ref
                 });
+                findHsts = await models.dofollow.find({
+                    host: host
+                });
+            }
+
+            for (h of findRefs) {
+                const hId = h._id.toHexString();
+                const match = findHsts.findIndex(el => {
+                    return el._id.toHexString() === hId;
+                })
+                if (match != -1) findHsts.splice(match);
             }
 
             res.json({
                 error: null,
                 refUrl: ref,
                 host: host,
-                data: findRefs
+                refList: findRefs,
+                hstList: findHsts
             });
 
         } catch (e) {

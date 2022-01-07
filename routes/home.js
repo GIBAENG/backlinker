@@ -35,13 +35,12 @@ router.post('/', async (req, res) => {
     const post = req.body.info;
 
     const u = new urlParser(post.url);
-    console.log(u);
+    // console.log(u);
     // let host = u.hostname;
     // let splHost = host.split('.');
     // if (splHost.length < 3) host = 'www.' + host;
     // const ref = host + u.pathname;
     const ref = u.host + u.pathname;
-    console.log(ref);
 
 
     if (post.order === 'check') {
@@ -108,15 +107,22 @@ router.post('/', async (req, res) => {
     } else if (post.order === 'add') {
         try {
             if (post.type === 'dofollow') {
-                if (post.dbID === null) {
+                if (post.dbID === 'default') {
                     await new models.dofollow({
                         host: u.hostname,
                         refUrl: ref,
                         prmUrl: u.href,
-                        arrAlike: u.href
+                        arrAlike: u.href,
+                        notice: post.notice
                     }).save();
                 } else {
-
+                    await models.dofollow.updateOne({
+                        _id: post.dbID
+                    }, {
+                        $push: {
+                            arrAlike: u.href
+                        }
+                    });
                 }
 
             }

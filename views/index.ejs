@@ -30,18 +30,18 @@
         <a class="nav-link" href="/">Generator</a>
     </nav>
 
+    <p testUrl class="container" onclick="copyText()">https://www.test.com/21?afgheaer</p>
 
-    <div class="container">
-        <input type="radio" value="1" name="score" checked> 1
-        <input type="radio" value="2" name="score"> 2
-        <input type="radio" value="3" name="score"> 3
-        <input type="radio" value="4" name="score"> 4
-        <input type="radio" value="5" name="score"> 5
-        <br />
-        <input type="button" value="확인" onclick="test_sample()">
+    <div class="container" style="padding:10px 0px;">
+        <div class="btn-group btn-group-lg w-100" role="group" aria-label="Basic radio toggle button group">
+            <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked>
+            <label class="btn btn-outline-secondary" for="btnradio1">Dofollow</label>
+
+            <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="btnradio2">Nofollow</label>
+        </div>
     </div>
 
-    <p testUrl class="container" onclick="copyTest()">https://www.test.com/21?afgheaer</p>
 
     <div class="callout container mb-4">
         <form check>
@@ -62,16 +62,16 @@
 
         <div class="px-2 py-2 bg-light">
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-                <label class="form-check-label" for="inlineCheckbox1">앵커텍스트 X</label>
+                <input class="form-check-input" type="checkbox" name="noticeCheckbox" value="noAnker">앵커텍스트 X
             </div>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
-                <label class="form-check-label" for="inlineCheckbox2">본문링크삽입 X</label>
+                <input class="form-check-input" type="checkbox" name="noticeCheckbox" value="noLink">본문링크삽입 X
             </div>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="option3">
-                <label class="form-check-label" for="inlineCheckbox3">한글 X</label>
+                <input class="form-check-input" type="checkbox" name="noticeCheckbox" value="noHangul">한글 X
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="noticeCheckbox" value="isWiki">위키태그
             </div>
         </div>
     </div>
@@ -81,7 +81,7 @@
             <p style="width:50px; font-weight:bold;">URL</p>
             <p addUrl-checked style="padding-left:8px"></p>
             <div class="ms-auto" style="width:40px; padding:0px 8px;">
-                <input class="form-check-input" type="radio" name="RadioUrl" id="rDefault" checked>
+                <input radio-default class="form-check-input" type="radio" name="RadioUrl" value="default" checked>
             </div>
         </div>
     </div>

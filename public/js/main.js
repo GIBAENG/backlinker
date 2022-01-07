@@ -1,6 +1,6 @@
 'use strict'
 
-function copyTest(elm) {
+function copyText(elm) {
     var tempElem = document.createElement('textarea');
     tempElem.value = document.querySelector('p[testUrl]').innerText;
     document.body.appendChild(tempElem);
@@ -9,17 +9,6 @@ function copyTest(elm) {
     document.execCommand("copy");
     document.body.removeChild(tempElem);
 
-}
-
-function test_sample() {
-    const sample = document.getElementsByName('score');
-    // console.log(sample);
-    for (var i = 0; i < sample.length; i++) {
-        if (sample[i].checked) {
-            //console.log(sample[i].value)
-            alert(sample[i].value)
-        }
-    }
 }
 
 function initElms() {
@@ -33,19 +22,25 @@ function initElms() {
     document.querySelector(`p[host-checked]`).innerText = '';
     document.querySelector('table[table-hst] tbody').innerHTML = '';
 
+    document.querySelector('input[radio-default]').checked = true;
+
+    document.querySelector('input[memo-input]').value = '';
+    const nts = document.getElementsByName('noticeCheckbox');
+    nts.forEach((item, i) => {
+        item.checked = false;
+    });
+
 }
-
-
 
 function reqCheckBySubmit(evt) {
     evt.preventDefault();
 
-    const url = evt.currentTarget.querySelector(`input[url-input]`).value;
-    console.log(url, ' $check');
-    if (url === undefined) return
+    const _url = evt.currentTarget.querySelector(`input[url-input]`).value;
+    console.log(_url, ' $check');
+    if (_url === undefined) return
 
     initElms();
-    document.querySelector('p[addUrl-checked]').innerHTML = `<a href=${url}>${url}</a>`;
+    document.querySelector('p[addUrl-checked]').innerHTML = `<a href=${_url}>${_url}</a>`;
 
     fetch('/', {
             method: 'POST',
@@ -56,7 +51,7 @@ function reqCheckBySubmit(evt) {
                 info: {
                     order: 'check',
                     type: 'dofollow',
-                    url: url
+                    url: _url
                 }
             })
         })
@@ -71,7 +66,7 @@ function reqCheckBySubmit(evt) {
 
 function resCheck(json) {
     if (json.error != null) {
-        alert(err);
+        alert(json.error);
         return
     }
 
@@ -104,7 +99,7 @@ function resCheck(json) {
         <td>${(i+1).toString()}</td>
         <td><a href='${u['prmUrl']}' target='_blank'>${u['prmUrl']}</a></td>
         <td>${moment(u['date']).format('YYYY-MM-DD-HH:mm')}</td>
-        <td><input class="form-check-input" type="radio" name="RadioUrl" id="rRef${i}"></td>
+        <td><input class="form-check-input" type="radio" name="RadioUrl" value="${u['_id']}"></td>
         </tr>`;
     }
 
@@ -116,23 +111,39 @@ function resCheck(json) {
         <td>${(i+1).toString()}</td>
         <td><a href='${u['prmUrl']}' target='_blank'>${u['prmUrl']}</a></td>
         <td>${moment(u['date']).format('YYYY-MM-DD-HH:mm')}</td>
-        <td><input class="form-check-input" type="radio" name="RadioUrl" id="rHst${i}"></td>
+        <td><input class="form-check-input" type="radio" name="RadioUrl" value="${u['_id']}"></td>
         </tr>`;
     }
 
 }
+const n = null;
+console.log(n);
 
 function reqAddByClick(evt) {
     evt.preventDefault();
 
-    const url = document.querySelector(`p[addUrl-checked]`).innerText;
-    console.log(url, ' $add');
-    if (url === '') return
+    const _url = document.querySelector(`p[addUrl-checked]`).innerText;
+    console.log(_url, ' $add');
+    if (_url === '') return
 
-    const radios = document.getElementsByName('rUrl');
-    for (r of radios) {
-        // if (r.checked)
-    }
+    let _dbID = document.querySelector('input[radio-default]').value;
+    const radios = document.getElementsByName('RadioUrl');
+    radios.forEach((item, i) => {
+        if (item.checked) {
+            _dbID = item.value;
+        }
+    });
+
+    let _notice = {
+        memo: document.querySelector('input[memo-input]').value
+    };
+    const nts = document.getElementsByName('noticeCheckbox');
+    nts.forEach((item, i) => {
+        if (item.checked) {
+            _notice[item.value] = true;
+        }
+    });
+
 
     fetch('/', {
             method: 'POST',
@@ -143,8 +154,9 @@ function reqAddByClick(evt) {
                 info: {
                     order: 'add',
                     type: 'dofollow',
-                    url: url,
-                    dbID: null
+                    url: _url,
+                    dbID: _dbID,
+                    notice: _notice
                 }
             })
         })
@@ -156,7 +168,7 @@ function reqAddByClick(evt) {
 
 function resAdd(json) {
     if (json.error != null) {
-        alert(err);
+        alert(json.error);
         return
     }
 
@@ -166,6 +178,10 @@ function resAdd(json) {
 
 }
 
+let typeFollow = 'do';
 
-document.querySelector('form[check]').addEventListener("submit", (e) => reqCheckBySubmit(e));
-document.querySelector('form[add]').addEventListener("submit", (e) => reqAddByClick(e));
+function setup() {
+
+    document.querySelector('form[check]').addEventListener("submit", (e) => reqCheckBySubmit(e));
+    document.querySelector('form[add]').addEventListener("submit", (e) => reqAddByClick(e));
+}

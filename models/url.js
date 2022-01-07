@@ -18,7 +18,29 @@ const SchUrl = new Schema({
         type: String,
         required: true
     },
-    arrAlike: [String]
+    arrAlike: [String],
+    notice: {
+        memo: {
+            type: String,
+            require: true
+        },
+        noAnker: {
+            type: Boolean,
+            default: false
+        },
+        noLink: {
+            type: Boolean,
+            default: false
+        },
+        noHangul: {
+            type: Boolean,
+            default: false
+        },
+        isWiki: {
+            type: Boolean,
+            default: false
+        }
+    }
 });
 
 // const nofollow = new Schema({

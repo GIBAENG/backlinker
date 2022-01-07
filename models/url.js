@@ -14,11 +14,11 @@ const SchUrl = new Schema({
         type: String,
         required: true
     },
-    addUrl: {
+    prmUrl: {
         type: String,
         required: true
     },
-    alike: [String]
+    arrAlike: [String]
 });
 
 // const nofollow = new Schema({

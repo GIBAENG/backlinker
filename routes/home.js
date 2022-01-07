@@ -35,72 +35,103 @@ router.post('/', async (req, res) => {
     const post = req.body.info;
 
     const u = new urlParser(post.url);
-    let host = u.hostname;
-    let splHost = host.split('.');
-    if (splHost.length < 3) host = 'www.' + host;
-    const ref = host + u.pathname;
+    console.log(u);
+    // let host = u.hostname;
+    // let splHost = host.split('.');
+    // if (splHost.length < 3) host = 'www.' + host;
+    // const ref = host + u.pathname;
+    const ref = u.host + u.pathname;
+    console.log(ref);
+
 
     if (post.order === 'check') {
         try {
-            let findRefs = [];
-            let findHsts = [];
-            if (post.type === 'dofollow') {
-                findRefs = await models.dofollow.find({
-                    refUrl: ref
-                });
-                findHsts = await models.dofollow.find({
-                    host: host
-                });
-            } else if (post.type === 'nofollow') {
-                findRefs = await models.nofollow.find({
-                    refUrl: ref
-                });
-                findHsts = await models.dofollow.find({
-                    host: host
-                });
-            }
 
-            for (h of findRefs) {
-                const hId = h._id.toHexString();
-                const match = findHsts.findIndex(el => {
-                    return el._id.toHexString() === hId;
-                })
-                if (match != -1) findHsts.splice(match);
-            }
-
-            res.json({
-                error: null,
-                refUrl: ref,
-                host: host,
-                refList: findRefs,
-                hstList: findHsts
+            const uu = await models.dofollow.findOne({
+                arrAlike: u.href
             });
 
+            let findRefs = [];
+            let findHsts = [];
+
+
+            if (uu != null) {
+                res.json({
+                    error: null,
+                    find: uu,
+                    refUrl: ref,
+                    host: u.hostname,
+                    refList: null,
+                    hstList: null
+                });
+
+            } else {
+                if (post.type === 'dofollow') {
+                    findRefs = await models.dofollow.find({
+                        refUrl: ref
+                    });
+                    findHsts = await models.dofollow.find({
+                        host: u.hostname
+                    });
+                } else if (post.type === 'nofollow') {
+                    findRefs = await models.nofollow.find({
+                        refUrl: ref
+                    });
+                    findHsts = await models.dofollow.find({
+                        host: u.hostname
+                    });
+                }
+
+                for (h of findRefs) {
+                    const hId = h._id.toHexString();
+                    const match = findHsts.findIndex(el => {
+                        return el._id.toHexString() === hId;
+                    });
+                    if (match != -1) findHsts.splice(match);
+                }
+
+                res.json({
+                    error: null,
+                    find: null,
+                    refUrl: ref,
+                    host: u.hostname,
+                    refList: findRefs,
+                    hstList: findHsts
+                });
+            }
+
         } catch (e) {
+            console.log(e);
             errExeption(e, res, 'error / find process for db');
         }
 
     } else if (post.order === 'add') {
         try {
             if (post.type === 'dofollow') {
-                await new models.dofollow({
-                    host: host,
-                    refUrl: ref,
-                    addUrl: u
+                if (post.dbID === null) {
+                    await new models.dofollow({
+                        host: u.hostname,
+                        refUrl: ref,
+                        prmUrl: u.href,
+                        arrAlike: u.href
+                    }).save();
+                } else {
 
-                }).save();
-            } else if (post.type === 'nofollow') {
-                await new models.nofollow({
-                    host: host,
-                    refUrl: ref,
-                    addUrl: u
+                }
 
-                }).save();
             }
+            // else if (post.type === 'nofollow') {
+            //     await new models.nofollow({
+            //         host: u.hostname,
+            //         refUrl: ref,
+            //         prmUrl: u.href
+            //
+            //     }).save();
+            // }
 
             res.json({
                 error: null,
-                succeed: true
+                type: post.type
             });
 
         } catch (e) {

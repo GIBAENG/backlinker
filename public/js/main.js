@@ -1,20 +1,5 @@
 'use strict'
 
-function initElms(type) {
-    document.querySelector(`div[${type}] p[idx-match]`).innerText = '';
-    document.querySelector(`p[host-checked]`).innerText = '';
-    document.querySelector(`p[refUrl-checked]`).innerText = '';
-
-    document.querySelector(`p[addUrl-checked]`).innerHTML = '';
-    // elm.setAttribute('href', '');
-
-    const t = document.querySelector('table[table-ref] tbody');
-    if (t != null) t.remove();
-
-    const t2 = document.querySelector('table[table-hst] tbody');
-    if (t2 != null) t2.remove();
-}
-
 function copyTest(elm) {
     var tempElem = document.createElement('textarea');
     tempElem.value = document.querySelector('p[testUrl]').innerText;
@@ -26,20 +11,41 @@ function copyTest(elm) {
 
 }
 
-function reqCheckBySubmit(evt, type) {
-    // console.log("evt");
+function test_sample() {
+    const sample = document.getElementsByName('score');
+    // console.log(sample);
+    for (var i = 0; i < sample.length; i++) {
+        if (sample[i].checked) {
+            //console.log(sample[i].value)
+            alert(sample[i].value)
+        }
+    }
+}
+
+function initElms() {
+    document.querySelector(`p[find-id]`).innerText = 'none';
+
+    document.querySelector(`p[addUrl-checked]`).innerHTML = '';
+
+    document.querySelector(`p[refUrl-checked]`).innerText = '';
+    document.querySelector('table[table-ref] tbody').innerHTML = '';
+
+    document.querySelector(`p[host-checked]`).innerText = '';
+    document.querySelector('table[table-hst] tbody').innerHTML = '';
+
+}
+
+
+
+function reqCheckBySubmit(evt) {
     evt.preventDefault();
 
-    const url = evt.currentTarget.querySelector(`div[${type}] input[url-input]`).value;
+    const url = evt.currentTarget.querySelector(`input[url-input]`).value;
     console.log(url, ' $check');
     if (url === undefined) return
 
+    initElms();
     document.querySelector('p[addUrl-checked]').innerHTML = `<a href=${url}>${url}</a>`;
-    // const t = document.querySelector('table[table-ref] tbody');
-    // if (t != null) t.remove();
-    // const t2 = document.querySelector('table[table-hst] tbody');
-    // if (t2 != null) t2.remove();
-
 
     fetch('/', {
             method: 'POST',
@@ -49,97 +55,84 @@ function reqCheckBySubmit(evt, type) {
             body: JSON.stringify({
                 info: {
                     order: 'check',
-                    type: type,
+                    type: 'dofollow',
                     url: url
                 }
             })
         })
         .then(res => res.json())
-        .then(json => resCheck(json, type))
+        .then(json => resCheck(json))
         .catch(err => console.log(err));
+
+
+    document.querySelector(`input[url-input]`).value = '';
 
 }
 
-function resCheck(json, type) {
-    const err = json.error;
-    if (err != null) {
+function resCheck(json) {
+    if (json.error != null) {
         alert(err);
         return
     }
 
-    document.querySelector(`div[${type}] input[url-input]`).value = '';
-    document.querySelector(`p[refUrl-checked]`).innerHTML = json.refUrl;
-    document.querySelector(`p[host-checked]`).innerHTML = json.host;
+    document.querySelector(`p[refUrl-checked]`).innerText = json.refUrl;
+    document.querySelector(`p[host-checked]`).innerText = json.host;
 
-    const urlComp = document.querySelector(`p[addUrl-checked]`).innerText;
+    if (json.find != null) {
+        const doc = json.find;
+
+        document.querySelector('p[prmUrl-checked]').innerHTML = `<a href=${doc.prmUrl}>${doc.prmUrl}</a>`;
+
+        const addUrl = document.querySelector('p[addUrl-checked]').innerText;
+        const _idx = doc.arrAlike.findIndex(el => {
+            return el === addUrl;
+        });
+
+        document.querySelector('p[alikeUrl-checked]').innerHTML = `<a href=${doc.arrAlike[_idx]}>${doc.arrAlike[_idx]}</a>`;
+
+        document.querySelector('p[find-id]').innerText = doc._id;
+        document.querySelector('form[add] button').setAttribute('disabled', '');
+
+        return
+    }
 
     const list_ref = json.refList;
-    let idxMatch = 'none';
-
+    let tb_ref = document.querySelector('table[table-ref] tbody');
     for (var i = 0; i < list_ref.length; i++) {
         const u = list_ref[i];
-        document.querySelector('tbody[tbody-ref]').innerHTML += `<tr>
+        tb_ref.innerHTML += `<tr>
         <td>${(i+1).toString()}</td>
-        <td><a href='${u['addUrl']}' target='_blank'>${u['addUrl']}</a></td>
+        <td><a href='${u['prmUrl']}' target='_blank'>${u['prmUrl']}</a></td>
         <td>${moment(u['date']).format('YYYY-MM-DD-HH:mm')}</td>
-        <td><input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></td>
+        <td><input class="form-check-input" type="radio" name="RadioUrl" id="rRef${i}"></td>
         </tr>`;
-
-        if (u['addUrl'] === urlComp) {
-            idxMatch = i + 1;
-        }
-
     }
-
-    document.querySelector(`p[idx-match]`).innerText = idxMatch;
-
-
 
     const list_hst = json.hstList;
-    let tbody2 = document.createElement('tbody');
-    let idxMatch2 = 'none';
-
+    let tb_hst = document.querySelector('table[table-hst] tbody');
     for (var i = 0; i < list_hst.length; i++) {
         const u = list_hst[i];
-        let tr = document.createElement('tr');
-
-        let th = document.createElement('th');
-        th.innerText = (i + 1).toString();
-        tr.appendChild(th);
-
-        let td1 = document.createElement('td');
-        let a = document.createElement('a');
-        a.setAttribute('href', u['addUrl']);
-        a.setAttribute('target', '_blank');
-        a = td1.appendChild(a);
-        a.innerText = u['addUrl'];
-        tr.appendChild(td1);
-
-        let td2 = document.createElement('td');
-        td2.innerText = moment(u['date']).format('YYYY-MM-DD-HH:mm');
-        tr.appendChild(td2);
-
-        tbody2.appendChild(tr);
-
-        if (u['addUrl'] === urlComp) {
-            idxMatch2 = i + 1;
-        }
-
+        tb_hst.innerHTML += `<tr>
+        <td>${(i+1).toString()}</td>
+        <td><a href='${u['prmUrl']}' target='_blank'>${u['prmUrl']}</a></td>
+        <td>${moment(u['date']).format('YYYY-MM-DD-HH:mm')}</td>
+        <td><input class="form-check-input" type="radio" name="RadioUrl" id="rHst${i}"></td>
+        </tr>`;
     }
-
-    document.querySelector(`p[idx-match2]`).innerText = idxMatch2;
-    document.querySelector('table[table-hst]').appendChild(tbody2);
-
 
 }
 
-function reqAddByClick(evt, type) {
+function reqAddByClick(evt) {
     evt.preventDefault();
-    // console.log(evt);
 
-    const url = document.querySelector(`p[addUrl-checked]`).innerHTML;
-    if (url === '') return
+    const url = document.querySelector(`p[addUrl-checked]`).innerText;
     console.log(url, ' $add');
+    if (url === '') return
+
+    const radios = document.getElementsByName('rUrl');
+    for (r of radios) {
+        // if (r.checked)
+    }
 
     fetch('/', {
             method: 'POST',
@@ -149,33 +142,30 @@ function reqAddByClick(evt, type) {
             body: JSON.stringify({
                 info: {
                     order: 'add',
-                    type: type,
-                    url: url
+                    type: 'dofollow',
+                    url: url,
+                    dbID: null
                 }
             })
         })
         .then(res => res.json())
-        .then(json => resAdd(json, type))
+        .then(json => resAdd(json))
         .catch(err => console.log(err));
 
 }
 
-function resAdd(json, type) {
-    const err = json.error;
-    if (err != null) {
+function resAdd(json) {
+    if (json.error != null) {
         alert(err);
         return
     }
 
-    if (json.succeed) alert('saved url')
+    alert(`saved  ${json.type}  URL`)
 
-    initElms(type);
+    initElms();
 
 }
 
 
-document.querySelector('div[dofollow] form[check]').addEventListener("submit", (e) => reqCheckBySubmit(e, 'dofollow'));
-document.querySelector('div[dofollow] form[add]').addEventListener("submit", (e) => reqAddByClick(e, 'dofollow'));
-
-// document.querySelector('div[nofollow] form').addEventListener("submit", (e) => reqCheckBySubmit(e, 'nofollow'));
-// document.querySelector('div[nofollow] button[url-add]').addEventListener("click", (e) => reqAddByClick(e, 'nofollow'));
+document.querySelector('form[check]').addEventListener("submit", (e) => reqCheckBySubmit(e));
+document.querySelector('form[add]').addEventListener("submit", (e) => reqAddByClick(e));

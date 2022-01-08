@@ -30,6 +30,10 @@ function initElms() {
         item.checked = false;
     });
 
+    const inu = document.querySelector(`input[url-input]`);
+    inu.value = '';
+    inu.setAttribute('placeholder', typeFollow);
+
 }
 
 function reqCheckBySubmit(evt) {
@@ -50,7 +54,7 @@ function reqCheckBySubmit(evt) {
             body: JSON.stringify({
                 info: {
                     order: 'check',
-                    type: 'dofollow',
+                    type: typeFollow,
                     url: _url
                 }
             })
@@ -60,7 +64,7 @@ function reqCheckBySubmit(evt) {
         .catch(err => console.log(err));
 
 
-    document.querySelector(`input[url-input]`).value = '';
+    // document.querySelector(`input[url-input]`).value = '';
 
 }
 
@@ -116,8 +120,6 @@ function resCheck(json) {
     }
 
 }
-const n = null;
-console.log(n);
 
 function reqAddByClick(evt) {
     evt.preventDefault();
@@ -153,7 +155,7 @@ function reqAddByClick(evt) {
             body: JSON.stringify({
                 info: {
                     order: 'add',
-                    type: 'dofollow',
+                    type: typeFollow,
                     url: _url,
                     dbID: _dbID,
                     notice: _notice
@@ -178,10 +180,30 @@ function resAdd(json) {
 
 }
 
-let typeFollow = 'do';
+function tgFollow() {
+    const btns = document.getElementsByName('radioFollow');
+    btns.forEach((item, i) => {
+        if (item.checked) {
+            typeFollow = item.value;
+        }
+    });
+    initElms();
+}
+
 
 function setup() {
-
     document.querySelector('form[check]').addEventListener("submit", (e) => reqCheckBySubmit(e));
     document.querySelector('form[add]').addEventListener("submit", (e) => reqAddByClick(e));
+
+    document.querySelector('input[id=btnDofollow]').addEventListener('click', (e) => tgFollow());
+    document.querySelector('input[id=btnNofollow]').addEventListener('click', (e) => tgFollow());
+    tgFollow();
+
 }
+
+
+let typeFollow = 'dofollow';
+setup();
+
+
+//

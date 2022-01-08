@@ -3,6 +3,7 @@ const app = express();
 const mongoose = require('mongoose');
 
 const routeHome = require('./routes/home.js');
+const routePopper = require('./routes/popper.js');
 
 require('dotenv').config();
 
@@ -28,6 +29,7 @@ function middlewares() {
 
 function routes() {
     app.use('/', routeHome);
+    app.use('/', routePopper);
 }
 
 function server() {

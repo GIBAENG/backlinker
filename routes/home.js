@@ -34,30 +34,24 @@ router.post('/', async (req, res) => {
 
     const post = req.body.info;
 
+    let model = {};
+    if (post.type === 'dofollow') model = models.dofollow;
+    else if (pos.type === 'nofollow') model = models.nofollow;
+
     const u = new urlParser(post.url);
-    // console.log(u);
-    // let host = u.hostname;
-    // let splHost = host.split('.');
-    // if (splHost.length < 3) host = 'www.' + host;
-    // const ref = host + u.pathname;
-    const ref = u.host + u.pathname;
+    const ref = u.hostname + u.pathname;
 
 
     if (post.order === 'check') {
         try {
-
-            const uu = await models.dofollow.findOne({
+            const _find = await model.findOne({
                 arrAlike: u.href
             });
 
-            let findRefs = [];
-            let findHsts = [];
-
-
-            if (uu != null) {
+            if (_find != null) {
                 res.json({
                     error: null,
-                    find: uu,
+                    find: _find,
                     refUrl: ref,
                     host: u.hostname,
                     refList: null,
@@ -65,21 +59,12 @@ router.post('/', async (req, res) => {
                 });
 
             } else {
-                if (post.type === 'dofollow') {
-                    findRefs = await models.dofollow.find({
-                        refUrl: ref
-                    });
-                    findHsts = await models.dofollow.find({
-                        host: u.hostname
-                    });
-                } else if (post.type === 'nofollow') {
-                    findRefs = await models.nofollow.find({
-                        refUrl: ref
-                    });
-                    findHsts = await models.dofollow.find({
-                        host: u.hostname
-                    });
-                }
+                let findRefs = await model.find({
+                    refUrl: ref
+                });
+                let findHsts = await model.find({
+                    host: u.hostname
+                });
 
                 for (h of findRefs) {
                     const hId = h._id.toHexString();
@@ -104,36 +89,27 @@ router.post('/', async (req, res) => {
             errExeption(e, res, 'error / find process for db');
         }
 
+
     } else if (post.order === 'add') {
         try {
-            if (post.type === 'dofollow') {
-                if (post.dbID === 'default') {
-                    await new models.dofollow({
-                        host: u.hostname,
-                        refUrl: ref,
-                        prmUrl: u.href,
-                        arrAlike: u.href,
-                        notice: post.notice
-                    }).save();
-                } else {
-                    await models.dofollow.updateOne({
-                        _id: post.dbID
-                    }, {
-                        $push: {
-                            arrAlike: u.href
-                        }
-                    });
-                }
+            if (post.dbID === 'default') {
+                await new model({
+                    host: u.hostname,
+                    refUrl: ref,
+                    prmUrl: u.href,
+                    arrAlike: u.href,
+                    notice: post.notice
+                }).save();
 
+            } else {
+                await model.updateOne({
+                    _id: post.dbID
+                }, {
+                    $push: {
+                        arrAlike: u.href
+                    }
+                });
             }
-            // else if (post.type === 'nofollow') {
-            //     await new models.nofollow({
-            //         host: u.hostname,
-            //         refUrl: ref,
-            //         prmUrl: u.href
-            //
-            //     }).save();
-            // }
 
             res.json({
                 error: null,
@@ -145,29 +121,10 @@ router.post('/', async (req, res) => {
         }
     }
 
-
-
 });
+
 
 module.exports = router;
 
 
-// docDof = new models.dofollow({
-//     refUrl: 'www.test.com/21',
-//     addUrl: 'https://www.test.com/21?aaaa'
-// });
 //
-// docDof.save((err) => {
-//     if (err) console.log(err);
-// });
-
-
-// 컬렉션 수정하시려면 updateMany, updateOne 함수로
-// 첫번째 인자는 find query, 두번째 인자는 수정 사항인데
-// 데이터 변경은 $set{ url: "example.com" }
-
-// push array는 $push{ urls: { url: "example.com" } } // 이거
-// pull array는 $pull{ urls: { url: "example.com" } } // 이거는 어레이에 추가 빼기
-
-// $set{ url: "example.com" } 으로 하시면 돼용
-// newItem = {date: string, refUrl: string, addUrl: string}
